@@ -22,31 +22,25 @@ BASE_DIR = ".\\"
 def return_to_main_menu():
     second_menu.close()
     menu()
-
+    
 def set_difficulty(value, difficulty):
     global difficulty_level
     difficulty_level = difficulty  # Store the selected difficulty level
     print(f"Selected Difficulty: {value}, Difficulty Level: {difficulty_level}")
+    
 
-def reset_game_variables():
-    """Reset essential game variables when restarting."""
-    global fruits, score, lives, current_batch
-    fruits = []
-    score = 0
-    lives = 3
-    current_batch = 0
 
 #Starts the game and initializes the loading bar properly
 def start_the_game():
     loading.get_widget("1").set_value(0) # Reset the loading bar to 0
     mainmenu._open(loading)
     pygame.time.set_timer(update_loading, 30) # Restart the loading timer
-    reset_game_variables()
+
     try:
         game_loop(difficulty_level)  # Pass the difficulty level when starting the game
     except NameError:
         game_loop(1)
-
+    
 # Navigate to the level menu
 def level_menu():
     mainmenu._open(level)
@@ -102,17 +96,18 @@ def menu():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
-
+                
         # Display the background image
         screen.blit(background_image, (0, 0))        
-
+    
         if mainmenu.is_enabled():
             mainmenu.update(events)
             mainmenu.draw(screen)
             if (mainmenu.get_current().get_selected_widget()):
                 arrow.draw(screen, mainmenu.get_current().get_selected_widget())
-
+                
         pygame.display.update()         
+
 
 def secondMenu():
     while True:
@@ -128,16 +123,16 @@ def secondMenu():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
-
+                
         # Display the background image
         screen.blit(background_image, (0, 0))        
-
+    
         if second_menu.is_enabled():
             second_menu.update(events)
             second_menu.draw(screen)
             if (second_menu.get_current().get_selected_widget()):
                 arrow.draw(screen, second_menu.get_current().get_selected_widget())
-
+        
         pygame.display.update()        
 
 
@@ -160,8 +155,6 @@ pygame.mixer.music.set_volume(0.3)
 
 #Color definitions
 WHITE=(255,255,255)
-BLACK=(0,0,0)
-LIGHTBLUE=(173,216,230)
 
 #List of all uppercase letters A-Z
 letter_list=list(string.ascii_uppercase)
@@ -195,7 +188,11 @@ fruit_names = ["kiwi.png", "pineapple.png", "grape.png", "lemon.png", "watermelo
 "bomb.png", "ice.png"]
 
 fruit_images = []
+
+
 for name in fruit_names:
+
+
     try:
         image_path = os.path.join(BASE_DIR,"assets\\fruit", name)
         fruit_images.append(pygame.image.load(image_path))
@@ -204,12 +201,13 @@ for name in fruit_names:
         pygame.quit()
         exit()
 
+
 # Function to draw text with a white outline
 def draw_text(surface, text,pos, size=60, color=(255,255,255), font=None):
     '''draw text on top of surface'''
     if font is None:
         font=pygame.font.Font(None, size)
-
+        
     text_surface=font.render(text, True,color)
     text_outline = font.render(text, True, (0, 0, 0))
     surface.blit(text_outline, (pos[0] - 2, pos[1] - 2))
@@ -233,7 +231,7 @@ class Fruit:
         self.active = True
         self.letter= letter
         self.type= type
-
+        
         # Play appropriate sound based on fruit type
         if self.type == "bomb":
             sound_bomb.play()
@@ -241,7 +239,7 @@ class Fruit:
             sound_ice.play()
         else:
             sound_fruit.play()
-
+            
     # Move the fruit based on speed and gravity    
     def move(self):
         if self.active:
@@ -251,7 +249,7 @@ class Fruit:
 
     # Draw the fruit and the associated letter on the screen
     def draw(self, surface):
-
+            
         if self.active:
             surface.blit(self.image, (self.x, self.y))
             draw_text(surface,self.letter,(self.x+40,self.y+40),50, (255,255,255))
@@ -280,7 +278,7 @@ def create_fruit_batch(batch_size, difficulty_level):
 
         elif "bomb" in fruit_name.lower():
             fruit_type="bomb"
-
+        
         else:
             fruit_type="fruit"
 
@@ -295,16 +293,14 @@ def create_fruit_batch(batch_size, difficulty_level):
 
 def game_loop(difficulty_level):
 # Game variables
-    fruit_batches = [1, 1, 1, 1, 2, 2, 1, 1, 2, 1, 2, 1, 1, 2, 2, 1, 2, 2, 1, 2, 1, 1, 1, 2, 2, 2, 2, 1, 3, 2, 2, 4, 3, 4, 2, 1, 2, 1, 2, 3, 2, 2, 1, 2, 1, 2, 3, 3]  # Sequence of batches
+    fruit_batches = [1, 1, 1, 1, 2, 2, 1, 1, 2, 1, 2, 1, 1, 2, 2, 1, 2, 2, 1, 2, 1, 1, 1, 2, 2,\
+                    2, 2, 1, 3, 2, 2, 4, 3, 4, 2, 1, 2, 1, 2, 3, 2, 2, 1, 2, 1, 2, 3, 3]  # Sequence of batches
     current_batch = 0
     fruits = []
     next_batch_timer = 0
     batch_interval = 2500  # Interval between batches (in milliseconds)
 
-
     clock = pygame.time.Clock()
-    start_time = pygame.time.get_ticks()
-
 
     score=0
 
@@ -315,12 +311,12 @@ def game_loop(difficulty_level):
 
     combo_message=""
     combo_display_time=0
-
-
+    
     while game_running:
         current_time = pygame.time.get_ticks()
-        letter_list=list(string.ascii_uppercase)
+
         keys=pygame.key.get_pressed()
+
         if keys[pygame.K_ESCAPE]:
             mainmenu.reset(1)  # Reset to main menu properly**
             pygame.time.set_timer(update_loading, 0)
@@ -329,7 +325,7 @@ def game_loop(difficulty_level):
         # Draw the background
         screen.blit(background_image, (0, 0))
         draw_text(screen,f"Score: {score}",(0,0), 50,WHITE)
-        #draw_text(screen,f"lives: {lives}",(1075,0),50, WHITE)
+
         if lives==3:
             screen.blit(lives3img, (1025,0))
         if lives==2:
@@ -358,16 +354,13 @@ def game_loop(difficulty_level):
             if event.type==pygame.KEYDOWN:
                 pinput=event.unicode.upper()
                 fruit_hit=[fruit for fruit in fruits if fruit.active and pinput==fruit.letter]
-                '''if pinput=="Å":
-                    lives=3'''
-                
 
                 if len(fruit_hit)>=3:
                     combo_message=f"COMBO X{len(fruit_hit)}"
                     combo_display_time=pygame.time.get_ticks()+2000
                     bonus_score=2 if len(fruit_hit)==3 else 3
                     score+= bonus_score
-
+                
                 for fruit in fruit_hit:
                     #print(f"Detected fruit: {fruit.letter}, Type: {fruit.type}")
                     if fruit.type== "bomb":
@@ -383,24 +376,23 @@ def game_loop(difficulty_level):
 
 
         # Check if it's time to add a new batch of fruits
-
         if current_time - next_batch_timer > batch_interval and current_batch < len(fruit_batches):
             next_batch_timer = current_time
             batch_size = fruit_batches[current_batch]
             fruits.extend(create_fruit_batch(batch_size, difficulty_level))  # Pass the difficulty level
             current_batch += 1
-
+            
         if slow_mode:
             for fruit in fruits:
                 fruit.speed_y *= 0.5
                 fruit.speed_x *= 0.5
-
+        
         if slow_mode and current_time>slow_end:
             slow_mode=False
             for fruit in fruits:
                 fruit.speed_x= fruit.original_speed_x
                 fruit.speed_y= fruit.original_speed_y
-
+        
         if combo_message and current_time<combo_display_time:
             draw_text(screen, combo_message,(0, 50), 25, (255,255,0))
         elif current_time>=combo_display_time:
@@ -425,8 +417,6 @@ def game_loop(difficulty_level):
 
         pygame.display.flip()
         clock.tick(60)
-
-
 
 menu()
 
